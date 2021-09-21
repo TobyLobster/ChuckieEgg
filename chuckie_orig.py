@@ -1,8 +1,11 @@
+#########################################################################################
 #
 # Chuckie Egg disassembler
 #
-# Based on labels from RTW's disassembly of Chuckie Egg: https://stardot.org.uk/forums/viewtopic.php?p=220229#p220229
+# Based on labels and constants from RTW's disassembly of Chuckie Egg:
+#       https://stardot.org.uk/forums/viewtopic.php?p=220229#p220229
 #
+#########################################################################################
 
 from commands import *
 from trace6502 import hook_subroutine
@@ -875,6 +878,8 @@ expr(0x2325, "PlayerColour")
 expr(0x2337, "BigBirdColour")
 expr(0x233c, "SpriteId_BigBirdRight1")
 
+# Each sprite must have its own 'byte()' section for the labels to reside next to each sprite
+# It would be nicer to have just one byte section: 'byte(0x1100, 0x0796)'
 
 sprites = [256, 264, 272, 280, 288, 296, 312, 328, 344, 360, 376, 392, 408, 426, 444,
            492, 540, 588, 636, 780, 924, 944, 964, 984, 1004, 1024, 1046, 1086, 1126,
@@ -885,7 +890,6 @@ for sp in sprites:
     byte(0x1100 + oldsp, sp - oldsp)
     oldsp = sp
 
-#byte(0x1100, 0x0796)
 move(0x0900, 0x3000, 0x1100 - 0x0900)
 
 go()
