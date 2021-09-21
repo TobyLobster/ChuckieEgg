@@ -17,6 +17,8 @@ set_output_filename("chuckie_output.asm")
 acorn.mos_labels()
 acorn.hardware_bbc()
 
+move(0x0900, 0x3000, 0x1100 - 0x0900)
+
 # Zero page
 label(0x0000, "intervaltimerblock")
 label(0x001B, "savesp")
@@ -877,6 +879,40 @@ expr(0x2319, "SeedColour")
 expr(0x2325, "PlayerColour")
 expr(0x2337, "BigBirdColour")
 expr(0x233c, "SpriteId_BigBirdRight1")
+expr(0x234c, "BirdColour")
+expr(0x2356, "SpriteId_BirdRight1")
+expr(0x2366, "SpriteId_BirdEatLeft1")
+expr(0x2383, "LiftColour")
+expr(0x2387, "SpriteId_Lift")
+expr(0x23a4, "SpriteId_Lift")
+expr(0x24ed, "MapId_Platform")
+expr(0x24fc, "MapId_Platform")
+expr(0x250e, "MapId_Ladder")
+expr(0x2521, "MapId_Ladder")
+expr(0x259c, "MapId_Seed")
+expr(0x25d8, "MapId_Seed")
+expr(0x2619, "SpriteId_BirdUpDown1 - SpriteId_BirdRight1")
+expr(0x262f, "SpriteId_BirdUpDown1 - SpriteId_BirdRight1")
+expr(0x2645, "SpriteId_BirdLeft1 - SpriteId_BirdRight1")
+expr(0x265b, "SpriteId_BirdRight1 - SpriteId_BirdRight1")
+expr(0x2681, "SpriteId_BirdEatRight1 - SpriteId_BirdRight1")
+expr(0x269e, "DigitsColour")
+expr(0x2ce6, "LogoColour")
+expr(0x2cea, "SpriteId_BigC")
+expr(0x2cf3, "SpriteId_BigH")
+expr(0x2cfc, "SpriteId_BigU")
+expr(0x2d05, "SpriteId_BigC")
+expr(0x2d0e, "SpriteId_BigK")
+expr(0x2d17, "SpriteId_BigI")
+expr(0x2d20, "SpriteId_BigE")
+expr(0x2d29, "SpriteId_BigE")
+expr(0x2d32, "SpriteId_BigG")
+expr(0x2d3b, "SpriteId_BigG")
+expr(0x2ead, "LiftColour")
+expr(0x2eb1, "SpriteId_Lift")
+expr(0x2ec0, "SpriteId_Lift")
+expr(0x2f65, "LivesColour")
+expr(0x2f7e, "SpriteId_Life")
 
 # Each sprite must have its own 'byte()' section for the labels to reside next to each sprite
 # It would be nicer to have just one byte section: 'byte(0x1100, 0x0796)'
@@ -889,8 +925,6 @@ oldsp = 0
 for sp in sprites:
     byte(0x1100 + oldsp, sp - oldsp)
     oldsp = sp
-
-move(0x0900, 0x3000, 0x1100 - 0x0900)
 
 go()
 
