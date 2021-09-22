@@ -12,7 +12,7 @@ from trace6502 import hook_subroutine
 import acorn
 
 load(0x1100, "CH_EGG_1100_29AB_ORIG.bin")
-set_output_filename("chuckie_output.asm")
+#set_output_filename("chuckie_output.asm")
 
 acorn.mos_labels()
 acorn.hardware_bbc()
