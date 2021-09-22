@@ -24,6 +24,77 @@ def label_skip(addr):
     label(addr, "skip" + str(global_skip))
     global_skip = global_skip + 1
 
+def comment_lined(addr, comm):
+    comment(addr, "----------------------------------------------------------------------------------\n" +
+            comm + "\n----------------------------------------------------------------------------------")
+
+def label_with_comment(addr, lab, comm):
+    comment_lined(addr, comm)
+    label(addr, lab)
+
+def sound_block(addr, lab):
+    label(addr, lab)
+    word(addr, 1)
+    label(addr + 2, lab + "_envelope")
+    word(addr + 2, 1)
+    label(addr + 4, lab + "_pitch")
+    word(addr + 4, 1)
+    label(addr + 6, lab + "_length")
+    word(addr + 6, 1)
+
+def level_data(addr, index):
+    lab = "map" + str(index)
+    comment(addr, "\n----------------------------------------------------------------------------------\nMap " + str(index) + " Data\n----------------------------------------------------------------------------------")
+    byte(addr, 5)
+    expr(addr,     "((" + lab + "platform_end - " + lab + "platform_start) / 3)")
+    expr(addr + 1, "((" + lab + "ladder_end - "   + lab + "ladder_start) / 3)")
+    expr(addr + 3, "((" + lab + "seed_end - "   + lab + "seed_start) / 2)")
+    platform_count = memory[addr]
+    ladder_count = memory[addr + 1]
+    has_lifts = memory[addr + 2]
+    seed_count = memory[addr + 3]
+    bird_count = memory[addr + 4]
+    label(addr, lab + "data")
+    addr += 5
+    comment(addr, "Platform data (Y, startX, endX)")
+    label(addr, lab + "platform_start")
+    addr += 3 * platform_count
+    label(addr, lab + "platform_end")
+
+    comment(addr, "Ladder data (X, bottom Y, top Y)")
+    label(addr, lab + "ladder_start")
+    addr += 3 * ladder_count
+    label(addr, lab + "ladder_end")
+
+    if (has_lifts):
+        comment(addr, "Lift X")
+        addr += 1
+
+
+    comment(addr, "Data for 12 eggs (X, Y)")
+    byte(addr, 24)
+    addr += 24
+
+    comment(addr, "Seed data (X, Y)")
+    label(addr, lab + "seed_start")
+    addr += 2 * seed_count
+    label(addr, lab + "seed_end")
+
+    label(addr, lab + "bird_data")
+    comment(addr, "Bird data (X, Y)")
+    addr += 5 * 2
+    return addr
+
+def declare_stringn(addr, lab):
+    byte(addr)
+    length = memory[addr]
+    start_str = lab + "_start"
+    end_str = lab + "_end"
+    expr(addr, end_str + " - " + start_str)
+    label(addr, lab)
+    label(addr + 1, start_str)
+    label(addr + 1 + length, end_str)
+
 move(0x0900, 0x3000, 0x1100 - 0x0900)
 
 # Zero page
@@ -139,9 +210,9 @@ label(0x0510, "collectedeggsflags")
 label(0x0520, "collectedseedflags")
 label(0x0600, "mapdata")
 label(0x0700, "mapdata + $0100")
-label(0x0900, "showkeys")
-label(0x0903, "choosekeys")
-label(0x095C, "waitforkey")
+label_with_comment(0x0900, "showkeys", "Show the currently defined keys on screen")
+label_with_comment(0x0903, "choosekeys", "Let the player select their preferred keys")
+label_with_comment(0x095C, "waitforkey", "Wait for the player to press a key that hasn't yet been chosen, and print its name")
 label(0x096B, "didntpressshift")
 label(0x097A, "didntpressctrl")
 label(0x0983, "gotakey")
@@ -167,48 +238,33 @@ label(0x0A89, "notdownarrow")
 label(0x0A94, "notuparrow")
 label(0x0AAC, "printstringandreturninkey")
 label(0x0AAF, "returninkey")
-label(0x0AB2, "string_keyselection")
-label(0x0AB3, "string_keyselection_start")
-label(0x0ADC, "string_keyselection_end")
-stringn(0x0AB2)
-label(0x0ADC, "string_up")
-label(0x0ADD, "string_up_start")
-label(0x0AE9, "string_up_end")
-label(0x0AE9, "string_down")
-label(0x0AEA, "string_down_start")
-label(0x0AF8, "string_down_end")
-label(0x0AF8, "string_left")
-label(0x0AF9, "string_left_start")
-label(0x0B07, "string_left_end")
-label(0x0B07, "string_right")
-label(0x0B08, "string_right_start")
-label(0x0B17, "string_right_end")
-label(0x0B17, "string_jump")
-label(0x0B18, "string_jump_start")
-label(0x0B26, "string_jump_end")
-label(0x0B26, "string_tab")
-label(0x0B2A, "string_capslock")
-label(0x0B34, "string_shiftlock")
-label(0x0B3F, "string_escape")
-label(0x0B46, "string_space")
-label(0x0B4C, "string_delete")
-label(0x0B53, "string_return")
-label(0x0B5A, "string_copy")
-label(0x0B5F, "string_leftarrow")
-label(0x0B6A, "string_rightarrow")
-label(0x0B76, "string_downarrow")
-label(0x0B81, "string_uparrow")
-label(0x0B8A, "string_shift")
-label(0x0B90, "string_control")
-label(0x0B98, "showkeys_core")
-label(0x0BF0, "printkeyname")
-label(0x0BF8, "string_keys")
-label(0x0BF9, "string_keys_start")
-label(0x0C09, "string_keys_end")
-label(0x0C09, "string_holdabort")
-label(0x0C0A, "string_holdabort_start")
-label(0x0C38, "string_holdabort_end")
-label(0x0C38, "domovementsound")
+declare_stringn(0x0AB2, "string_keyselection")
+comment_lined(0xab2, "Key-related strings")
+declare_stringn(0x0ADC, "string_up")
+declare_stringn(0x0AE9, "string_down")
+declare_stringn(0x0AF8, "string_left")
+declare_stringn(0x0B07, "string_right")
+declare_stringn(0x0B17, "string_jump")
+declare_stringn(0x0B26, "string_tab")
+declare_stringn(0x0B2A, "string_capslock")
+declare_stringn(0x0B34, "string_shiftlock")
+declare_stringn(0x0B3F, "string_escape")
+declare_stringn(0x0B46, "string_space")
+declare_stringn(0x0B4C, "string_delete")
+declare_stringn(0x0B53, "string_return")
+declare_stringn(0x0B5A, "string_copy")
+declare_stringn(0x0B5F, "string_leftarrow")
+declare_stringn(0x0B6A, "string_rightarrow")
+declare_stringn(0x0B76, "string_downarrow")
+declare_stringn(0x0B81, "string_uparrow")
+declare_stringn(0x0B8A, "string_shift")
+declare_stringn(0x0B90, "string_control")
+label_with_comment(0x0B98, "showkeys_core", "Show the currently defined keys on screen")
+label_with_comment(0x0BF0, "printkeyname", "Print the name of the key whose INKEY code is in A")
+comment_lined(0x0bf8, "Other key-related strings")
+declare_stringn(0x0BF8, "string_keys")
+declare_stringn(0x0C09, "string_holdabort")
+label_with_comment(0x0C38, "domovementsound", "Make movement sounds")
 label(0x0C3F, "ismoving")
 label(0x0C46, "domovementsound2")
 label(0x0C4F, "notmovinghorizontally")
@@ -217,78 +273,30 @@ label(0x0C6C, "jumpingupsound")
 label(0x0C76, "notjumpingsound")
 label(0x0C84, "notfallingsound")
 label(0x0C89, "movingonlift")
-label(0x0C8B, "playsoundblip")
-label(0x0C98, "blipsoundblock")
-label(0x0C9A, "blipsoundblock_envelope")
-label(0x0c9c, "blipsoundblock_pitch")
-label(0x0CA0, "deathsoundblock")
-label(0x0ca4, "deathsoundblock_pitch")
-label(0x0ca6, "deathsoundblock_length")
-label(0x0CA8, "eggsoundblock")
-label(0x0CAC, "eggsoundblock_pitch")
-label(0x0CB0, "bonussoundblock")
-label(0x0CB8, "SPARE")
-label(0x0CC0, "mapptrs")
-label(0x0CD0, "map0data")
-label(0x0CD5, "map0platform_start")
-label(0x0CFC, "map0platform_end");
-label(0x0CFC, "map0ladder_start")
-label(0x0D08, "map0ladder_end")
-label(0x0D20, "map0seed_start")
-label(0x0D34, "map0seed_end")
-label(0x0D3E, "map1data")
-label(0x0D43, "map1platform_start")
-label(0x0D6A, "map1platform_end")
-label(0x0D6A, "map1ladder_start")
-label(0x0D82, "map1ladder_end")
-label(0x0D9A, "map1seed_start")
-label(0x0DA8, "map1seed_end")
-label(0x0DB2, "map2data")
-label(0x0DB7, "map2platform_start")
-label(0x0DFF, "map2platform_end")
-label(0x0DFF, "map2ladder_start")
-label(0x0E14, "map2ladder_end")
-label(0x0E2D, "map2seed_start")
-label(0x0E41, "map2seed_end")
-label(0x0E4B, "map3data")
-label(0x0E50, "map3platform_start")
-label(0x0E9E, "map3platform_end")
-label(0x0E9E, "map3ladder_start")
-label(0x0EAD, "map3ladder_end")
-label(0x0EC6, "map3seed_start")
-label(0x0ED2, "map3seed_end")
-label(0x0EDC, "map4data")
-label(0x0EE1, "map4platform_start")
-label(0x0F14, "map4platform_end")
-label(0x0F14, "map4ladder_start")
-label(0x0F2F, "map4ladder_end")
-label(0x0F48, "map4seed_start")
-label(0x0F62, "map4seed_end")
-label(0x0F6C, "map5data")
-label(0x0F71, "map5platform_start")
-label(0x0FA1, "map5platform_end")
-label(0x0FA1, "map5ladder_start")
-label(0x0FB3, "map5ladder_end")
-label(0x0FCC, "map5seed_start")
-label(0x0FDE, "map5seed_end")
-label(0x0FE8, "map6data")
-label(0x0FED, "map6platform_start")
-label(0x1032, "map6platform_end")
-label(0x1032, "map6ladder_start")
-label(0x1047, "map6ladder_end")
-label(0x1060, "map6seed_start")
-label(0x1068, "map6seed_end")
-label(0x1072, "map7data")
-label(0x1077, "map7platform_start")
-label(0x10A4, "map7platform_end")
-label(0x10A4, "map7ladder_start")
-label(0x10B6, "map7ladder_end")
-label(0x10CE, "map7seed_start")
-label(0x10EE, "map7seed_end")
-label(0x10F8, "SPARE2")
-label(0x1100, "codelow_end")
-label(0x1100, "codemain_start")
-label(0x1100, "spritetable")
+label_with_comment(0x0C8B, "playsoundblip", "Play sound blip (movement sounds)\nA = pitch to play")
+sound_block(0x0C98, "blipsoundblock")
+sound_block(0x0CA0, "deathsoundblock")
+sound_block(0x0CA8, "eggsoundblock")
+sound_block(0x0CB0, "bonussoundblock")
+label(0x0CB8, "unused2")
+label_with_comment(0x0CC0, "mapptrs", "Map data pointers")
+pc = 0x0CC0
+for i in range(0,8):
+    expr(pc, "map" + str(i) + "data")
+    word(pc, 1)
+    pc += 2
+
+addr = 0x0cd0
+addr = level_data(addr, 0)
+addr = level_data(addr, 1)
+addr = level_data(addr, 2)
+addr = level_data(addr, 3)
+addr = level_data(addr, 4)
+addr = level_data(addr, 5)
+addr = level_data(addr, 6)
+addr = level_data(addr, 7)
+
+label(0x10F8, "unused3")
 label(0x1200, "sprite_platform")
 label(0x1208, "sprite_ladder")
 label(0x1210, "sprite_egg")
@@ -343,7 +351,7 @@ label(0x17A6, "sprite_bigk")
 label(0x17E2, "sprite_bigi")
 label(0x181E, "sprite_bige")
 label(0x185A, "sprite_bigg")
-label(0x1896, "SPARE3")
+label(0x1896, "unused4")
 label(0x1902, "plotsprite")
 label(0x191C, "rotatecolourloop")
 label(0x1920, "dontrotatecolour")
@@ -608,23 +616,15 @@ label(0x28DC, "positionpromptloop")
 label(0x28F0, "promptpositioned")
 label(0x2930, "copynewhiscorenameloop")
 label(0x293E, "exitgethiscorename")
-label(0x293F, "string_highscores")
-label(0x2940, "string_highscores_start")
-label(0x2957, "string_highscores_end")
-label(0x2957, "string_hiscorepos")
-label(0x2958, "string_hiscorepos_start")
+declare_stringn(0x293F, "string_highscores")
+declare_stringn(0x2957, "string_hiscorepos")
 label(0x295C, "hiscoreypos")
 label(0x295D, "hiscoreypos + 1")
-label(0x295E, "string_hiscorepos_end")
-label(0x295E, "string_hiscoreprompt")
-label(0x295F, "string_hiscoreprompt_start")
+declare_stringn(0x295E, "string_hiscoreprompt")
 label(0x2966, "promptypos")
 label(0x2967, "promptypos + 1")
-label(0x2969, "string_hiscoreprompt_end")
-label(0x2969, "string_enteryourname")
-label(0x296A, "string_enteryourname_start")
+declare_stringn(0x2969, "string_enteryourname")
 label(0x299a, "hiscorenamebuffer-8")
-label(0x299D, "string_enteryourname_end")
 label(0x299D, "osword0block")
 label(0x29A2, "hiscorenamebuffer")
 label(0x29AB, "hiscorenamebuffer_end")
@@ -689,9 +689,7 @@ label(0x2CC6, "displayrandomlevel")
 label(0x2CD8, "initplayersfordemo")
 label(0x2CE5, "showlogo")
 label(0x2D44, "showkeyhelp")
-label(0x2D4C, "string_keyhelp")
-label(0x2D4D, "string_keyhelp_start")
-label(0x2D88, "string_keyhelp_end")
+declare_stringn(0x2D4C, "string_keyhelp")
 label(0x2D88, "checktitlepagekeys_core")
 label(0x2D99, "didntpressS")
 label(0x2DA7, "pressedK")
@@ -950,15 +948,87 @@ expr(0x2eb1, "SpriteId_Lift")
 expr(0x2ec0, "SpriteId_Lift")
 expr(0x2f65, "LivesColour")
 expr(0x2f7e, "SpriteId_Life")
+expr(0x2921, "<osword0block")
+expr(0x2923, ">osword0block")
+
+sprite_names = [
+    "platform",
+    "ladder",
+    "egg",
+    "seed",
+    "lift",
+    "manright1",
+    "manright2",
+    "manright3",
+    "manleft1",
+    "manleft2",
+    "manleft3",
+    "manupdown1",
+    "manupdown2",
+    "manupdown3",
+    "bigbirdright1",
+    "bigbirdright2",
+    "bigbirdleft1",
+    "bigbirdleft2",
+    "cagewithhole",
+    "cage",
+    "birdright1",
+    "birdright2",
+    "birdleft1",
+    "birdleft2",
+    "birdupdown1",
+    "birdupdown2",
+    "birdeatright1",
+    "birdeatright2",
+    "birdeatleft1",
+    "birdeatleft2",
+    "digit0",
+    "digit1",
+    "digit2",
+    "digit3",
+    "digit4",
+    "digit5",
+    "digit6",
+    "digit7",
+    "digit8",
+    "digit9",
+    "score",
+    "highlightbox",
+    "player",
+    "level",
+    "bonus",
+    "time",
+    "life",
+    "bigc",
+    "bigh",
+    "bigu",
+    "bigk",
+    "bigi",
+    "bige",
+    "bigg"]
+
+addr=0x1100
+label(addr, "spritetable")
+byte(addr, 2)
+word(addr + 2)
+addr += 4
+i = 0
+for entry in range(1,55):
+    byte(addr, 2)
+    word(addr + 2)
+    expr(addr + 2, "sprite_" + sprite_names[i])
+    addr += 4
+    i += 1
+label(addr, "unused1")
 
 # Each sprite must have its own 'byte()' section for the labels to reside next to each sprite
 # It would be nicer to have just one byte section: 'byte(0x1100, 0x0796)'
 
-sprites = [256, 264, 272, 280, 288, 296, 312, 328, 344, 360, 376, 392, 408, 426, 444,
+sprites = [264, 272, 280, 288, 296, 312, 328, 344, 360, 376, 392, 408, 426, 444,
            492, 540, 588, 636, 780, 924, 944, 964, 984, 1004, 1024, 1046, 1086, 1126,
            1166, 1206, 1213, 1220, 1227, 1234, 1241, 1248, 1255, 1262, 1269, 1276, 1303,
            1339, 1375, 1420, 1474, 1519, 1522, 1582, 1642, 1702, 1762, 1822, 1882, 1942]
-oldsp = 0
+oldsp = 256
 for sp in sprites:
     byte(0x1100 + oldsp, sp - oldsp)
     oldsp = sp
