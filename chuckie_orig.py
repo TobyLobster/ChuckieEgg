@@ -380,7 +380,7 @@ label_with_comment(0x1987, "calcscrnaddr", "Calculate screen address from positi
 label_with_comment(0x19DB, "getspritedata", "Get sprite data of sprite A into spritewidth, spriteheight and (read)")
 label_with_comment(0x1A0C, "plotspriteatcharpos", "Plot sprite A at character block X, Y")
 label_with_comment(0x1A26, "printstring", "Print string at address YYXX" +
-    "\n;" +
+    "\n" +
     "\n	?YYXX = string length")
 label(0x1A30, "printstringloop")
 label_with_comment(0x1A3B, "handlekeyboard", "Handle keyboard input")
@@ -755,6 +755,21 @@ label(0x3000, "codemain_end")
 label(0x3000, "relocated_code")
 label(0x3000, "relocated_code_end")
 
+label(0x3100, "codemain_end+256")
+label(0x3200, "codemain_end+512")
+label(0x3300, "codemain_end+768")
+label(0x3400, "codemain_end+1024")
+label(0x3500, "codemain_end+1280")
+label(0x3600, "codemain_end+1536")
+label(0x3700, "codemain_end+1792")
+label(0x0a00, "showkeys+$0100")
+label(0x0b00, "showkeys+$0200")
+label(0x0c00, "showkeys+$0300")
+label(0x0d00, "showkeys+$0400")
+label(0x0e00, "showkeys+$0500")
+label(0x0f00, "showkeys+$0600")
+label(0x1000, "showkeys+$0700")
+
 Colour0 = 0                     # Black
 Colour1 = 2                     # Yellow
 Colour2 = 8                     # Magenta
@@ -975,6 +990,8 @@ expr(0x2f7e, "SpriteId_Life")
 expr(0x2921, "<osword0block")
 expr(0x2923, ">osword0block")
 
+
+# Handle sprites
 sprite_names = [
     "platform",
     "ladder",
