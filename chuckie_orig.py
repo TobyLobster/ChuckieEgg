@@ -1058,5 +1058,3 @@ for sp in sprites:
     oldsp = sp
 
 go()
-
-# l0c06
