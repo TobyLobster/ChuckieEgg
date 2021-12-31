@@ -81,11 +81,17 @@ def label_skip(addr):
     global_skip = global_skip + 1
 
 def comment_lined(addr, comm):
-    comment(addr, line_break + "\n" + comm + "\n" + line_break)
+    formatted_comment(addr, line_break + "\n" + comm + "\n" + line_break)
 
 def label_with_comment(addr, lab, comm):
     comment_lined(addr, comm)
     mylabel(addr, lab)
+
+def hex_block(addr, bytes_per_line, lines):
+    hexadecimal(addr, bytes_per_line * lines)
+    for y in range(0, lines):
+        byte(addr, bytes_per_line, bytes_per_line)
+        addr += bytes_per_line
 
 def sound_block(addr, lab):
     mylabel(addr, lab)
@@ -99,7 +105,7 @@ def sound_block(addr, lab):
 
 def level_data(addr, index):
     lab = "map" + str(index)
-    comment(addr, "\n" + line_break + "\nMap " + str(index) + " Data\n" + line_break)
+    formatted_comment(addr, "\n" + line_break + "\nMap " + str(index) + " Data\n" + line_break)
     byte(addr, 5)
     expr(addr,     "((" + lab + "platform_end - " + lab + "platform_start) / 3)")
     expr(addr + 1, "((" + lab + "ladder_end - "   + lab + "ladder_start) / 3)")
@@ -115,6 +121,7 @@ def level_data(addr, index):
     mylabel(addr, lab + "platform_start")
     for i in range(0, platform_count):
         byte(addr, 3)
+        decimal(addr, 3)
         addr += 3
     mylabel(addr, lab + "platform_end")
 
@@ -122,6 +129,7 @@ def level_data(addr, index):
     mylabel(addr, lab + "ladder_start")
     for i in range(0, ladder_count):
         byte(addr, 3)
+        decimal(addr, 3)
         addr += 3
     mylabel(addr, lab + "ladder_end")
 
@@ -134,6 +142,7 @@ def level_data(addr, index):
     comment(addr, "Data for 12 eggs (X, Y)")
     for i in range(0, 12):
         byte(addr, 2)
+        decimal(addr, 2)
         addr += 2
     mylabel(addr, lab + "eggs_end")
 
@@ -141,6 +150,7 @@ def level_data(addr, index):
     mylabel(addr, lab + "seed_start")
     for i in range(0, seed_count):
         byte(addr, 2)
+        decimal(addr, 2)
         addr += 2
     mylabel(addr, lab + "seed_end")
 
@@ -148,6 +158,7 @@ def level_data(addr, index):
     comment(addr, "Bird data (X, Y)")
     for i in range(0, 5):
         byte(addr, 2)
+        decimal(addr, 2)
         addr += 2
     return addr
 
@@ -160,6 +171,7 @@ def declare_stringn(addr, lab):
     mylabel(addr, lab)
     mylabel(addr + 1, start_str)
     mylabel(addr + 1 + length, end_str)
+    decimal(addr + 1, length)
 
 def my_label_maker(addr, context, suggestion):
 
@@ -436,6 +448,8 @@ mylabel(0x17E2, "sprite_bigi")
 mylabel(0x181E, "sprite_bige")
 mylabel(0x185A, "sprite_bigg")
 mylabel(0x1896, "unused4")
+hexadecimal(0x1200, 0x1896 - 0x1200)
+decimal(0x1896, 0x1902 - 0x1896)
 label_with_comment(0x1902, "plotsprite", "Plot sprite" +
     "\n" +
     "\n (read)          = sprite data" +
@@ -768,6 +782,7 @@ mylabel(0x2AE2, "copyloop")
 mylabel(0x2B5F, "initpalette")
 mylabel(0x2B76, "string_vdu19")
 mylabel(0x2B77, "string_vdu19_start")
+decimal(0x2B77)
 mylabel(0x2B78, "string_vdu19_start + 1")
 mylabel(0x2b79, "string_vdu19_start + 2")
 mylabel(0x2B7D, "string_vdu19_end")
@@ -785,6 +800,7 @@ mylabel(0x2C11, "resetplayerscores")
 mylabel(0x2C1D, "resetplayerscores2")
 mylabel(0x2C32, "resetperplayerloop")
 mylabel(0x2C44, "string_howmanyplayers")
+decimal(0x2C44, 0x2C5E - 0x2C44)
 mylabel(0x2C45, "string_howmanyplayers_start")
 mylabel(0x2C5E, "string_howmanyplayers_end")
 label_with_comment(0x2C5E, "pause", "Pause for A units of time")
@@ -834,8 +850,12 @@ mylabel(0x2F86, "playdeathtune")
 mylabel(0x2F92, "playdeathtuneloop")
 label_with_comment(0x2FB0, "deathtunedata", "Death tune data")
 mylabel(0x2FB1, "deathtune_start")
+for x in range(0x2FB1, 0x2FD1, 2):
+    byte(x, 2, 2)
+decimal(0x2FB1, 0x2FD1 - 0x2FB1)
 mylabel(0x2FD1, "deathtune_end")
 label_with_comment(0x2FD1, "envelope1", "Envelope data")
+hex_block(0x2fd1, 14, 3)
 mylabel(0x2FDF, "envelope2")
 mylabel(0x2FED, "envelope3")
 mylabel(0x3000, "codemain_end")
@@ -1194,6 +1214,7 @@ sprites[1686] = "";
 addr=0x1100
 label_with_comment(addr, "spritetable", "Sprite data table - width, height, address")
 byte(addr, 2)
+decimal(addr, 2)
 word(addr + 2)
 addr += 4
 i = 0
@@ -1202,6 +1223,7 @@ for offset in sprites:
     # Mark the sprite table as bytes and words as needed
     if (sprites[offset] != ""):
         byte(addr, 2)
+        decimal(addr, 2)
         word(addr + 2)
         expr(addr + 2, "sprite_" + sprites[offset])
         addr += 4
