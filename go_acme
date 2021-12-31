@@ -1,6 +1,8 @@
 set -e
 
-python chuckie_orig.py -a >chuckie_orig_acme.asm
+# python chuckie_orig.py -a >chuckie_orig_acme.asm
+python chuckie_orig.py -a >temp.asm
+python post_process.py <temp.asm >chuckie_orig_acme.asm
 ../tools/acme -o chuckie_orig_acme.bin chuckie_orig_acme.asm
 xxd -o 4352 CH_EGG_1100_29AB_ORIG.bin >temp1_acme.hex
 xxd -o 4352 chuckie_orig_acme.bin >temp2_acme.hex
