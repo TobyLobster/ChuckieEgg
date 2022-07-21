@@ -1,6 +1,6 @@
 set -e
 
-python chuckie_orig.py >chuckie_orig_beebasm.asm
+python3 chuckie_orig.py >chuckie_orig_beebasm.asm
 ../tools/beebasm -o chuckie_orig_beebasm.bin -i chuckie_orig_beebasm.asm
 xxd -o 4352 CH_EGG_1100_29AB_ORIG.bin >temp1_beebasm.hex
 xxd -o 4352 chuckie_orig_beebasm.bin >temp2_beebasm.hex
