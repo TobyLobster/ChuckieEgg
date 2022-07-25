@@ -22,8 +22,7 @@ config.set_show_all_labels(False)
 
 load(0x1100, "CH_EGG_1100_29AB_ORIG.bin", "6502")
 
-acorn.mos_labels()
-acorn.hardware_bbc()
+acorn.bbc()
 
 label_dict = {}
 
@@ -460,8 +459,8 @@ mylabel(0x1896, "unused4")
 decimal(0x1896, 0x1902 - 0x1896)
 label_with_comment(0x1902, "plotsprite", "Plot sprite" +
     "\n" +
-    "\n (read)          = sprite data" +
-    "\n (write)         = screen address" +
+    "\n (read,x)        = sprite data" +
+    "\n (write),y       = screen address" +
     "\n spriteline      = line within character row of sprite, 0-7" +
     "\n spritecolumn    = 0 or 1 for the pixel of the Mode 2 byte" +
     "\n spritewidth     = width of sprite data in bytes (multiples of 8 pixels)" +
@@ -984,109 +983,108 @@ constant(Colour12, "Colour12")
 constant(Colour13, "Colour13")
 constant(Colour14, "Colour14")
 constant(Colour15, "Colour15")
-constant(EggColour, "EggColour")
-constant(LiftColour, "LiftColour")
-constant(LadderColour, "LadderColour")
-constant(SeedColour, "SeedColour")
-constant(PlatformColour, "PlatformColour")
-constant(CageColour, "CageColour")
-constant(PlayerColour, "PlayerColour")
-constant(BigBirdColour, "BigBirdColour")
-constant(BirdColour, "BirdColour")
 
-constant(LogoColour, "LogoColour")
-constant(DigitsColour, "DigitsColour")
-constant(StatusColour, "StatusColour")
-constant(LivesColour, "LivesColour")
+
+constant(EggColour,      "EggColour")
+constant(LiftColour,     "LiftColour")
+constant(LadderColour,   "LadderColour")
+constant(SeedColour,     "SeedColour")
+constant(PlatformColour, "PlatformColour")
+constant(CageColour,     "CageColour")
+constant(PlayerColour,   "PlayerColour")
+constant(BigBirdColour,  "BigBirdColour")
+constant(BirdColour,     "BirdColour")
+constant(LogoColour,     "LogoColour")
+constant(DigitsColour,   "DigitsColour")
+constant(StatusColour,   "StatusColour")
+constant(LivesColour,    "LivesColour")
 
 constant(1, "MapId_Platform")
 constant(2, "MapId_Ladder")
 constant(4, "MapId_Egg")
 constant(8, "MapId_Seed")
 
+sprite_constants = {
+    0: "SpriteId_Blank",
+    1: "SpriteId_Platform",
+    2: "SpriteId_Ladder",
+    3: "SpriteId_Egg",
+    4: "SpriteId_Seed",
+    5: "SpriteId_Lift",
+    6: "SpriteId_ManRight1",
+    7: "SpriteId_ManRight2",
+    8: "SpriteId_ManRight3",
+    9: "SpriteId_ManLeft1",
+    10: "SpriteId_ManLeft2",
+    11: "SpriteId_ManLeft3",
+    12: "SpriteId_ManUpDown1",
+    13: "SpriteId_ManUpDown2",
+    14: "SpriteId_ManUpDown3",
+    15: "SpriteId_BigBirdRight1",
+    16: "SpriteId_BigBirdRight2",
+    17: "SpriteId_BigBirdLeft1",
+    18: "SpriteId_BigBirdLeft2",
+    19: "SpriteId_CageWithHole",
+    20: "SpriteId_Cage",
+    21: "SpriteId_BirdRight1",
+    22: "SpriteId_BirdRight2",
+    23: "SpriteId_BirdLeft1",
+    24: "SpriteId_BirdLeft2",
+    25: "SpriteId_BirdUpDown1",
+    26: "SpriteId_BirdUpDown2",
+    27: "SpriteId_BirdEatRight1",
+    28: "SpriteId_BirdEatRight2",
+    29: "SpriteId_BirdEatLeft1",
+    30: "SpriteId_BirdEatLeft2",
+    31: "SpriteId_Digit0",
+    32: "SpriteId_Digit1",
+    33: "SpriteId_Digit2",
+    34: "SpriteId_Digit3",
+    35: "SpriteId_Digit4",
+    36: "SpriteId_Digit5",
+    37: "SpriteId_Digit6",
+    38: "SpriteId_Digit7",
+    39: "SpriteId_Digit8",
+    40: "SpriteId_Digit9",
+    41: "SpriteId_Score",
+    42: "SpriteId_HighlightBox",
+    43: "SpriteId_Player",
+    44: "SpriteId_Level",
+    45: "SpriteId_Bonus",
+    46: "SpriteId_Time",
+    47: "SpriteId_Life",
+    48: "SpriteId_BigC",
+    49: "SpriteId_BigH",
+    50: "SpriteId_BigU",
+    51: "SpriteId_BigK",
+    52: "SpriteId_BigI",
+    53: "SpriteId_BigE",
+    54: "SpriteId_BigG",
+}
 
-constant(0, "SpriteId_Unused")
-constant(1, "SpriteId_Platform")
-constant(2, "SpriteId_Ladder")
-constant(3, "SpriteId_Egg")
-constant(4, "SpriteId_Seed")
-constant(5, "SpriteId_Lift")
-constant(6, "SpriteId_ManRight1")
-constant(7, "SpriteId_ManRight2")
-constant(8, "SpriteId_ManRight3")
-constant(9, "SpriteId_ManLeft1")
-constant(10, "SpriteId_ManLeft2")
-constant(11, "SpriteId_ManLeft3")
-constant(12, "SpriteId_ManUpDown1")
-constant(13, "SpriteId_ManUpDown2")
-constant(14, "SpriteId_ManUpDown3")
-constant(15, "SpriteId_BigBirdRight1")
-constant(16, "SpriteId_BigBirdRight2")
-constant(17, "SpriteId_BigBirdLeft1")
-constant(18, "SpriteId_BigBirdLeft2")
-constant(19, "SpriteId_CageWithHole")
-constant(20, "SpriteId_Cage")
-constant(21, "SpriteId_BirdRight1")
-constant(22, "SpriteId_BirdRight2")
-constant(23, "SpriteId_BirdLeft1")
-constant(24, "SpriteId_BirdLeft2")
-constant(25, "SpriteId_BirdUpDown1")
-constant(26, "SpriteId_BirdUpDown2")
-constant(27, "SpriteId_BirdEatRight1")
-constant(28, "SpriteId_BirdEatRight2")
-constant(29, "SpriteId_BirdEatLeft1")
-constant(30, "SpriteId_BirdEatLeft2")
-constant(31, "SpriteId_Digit0")
-constant(32, "SpriteId_Digit1")
-constant(33, "SpriteId_Digit2")
-constant(34, "SpriteId_Digit3")
-constant(35, "SpriteId_Digit4")
-constant(36, "SpriteId_Digit5")
-constant(37, "SpriteId_Digit6")
-constant(38, "SpriteId_Digit7")
-constant(39, "SpriteId_Digit8")
-constant(40, "SpriteId_Digit9")
-constant(41, "SpriteId_Score")
-constant(42, "SpriteId_HighlightBox")
-constant(43, "SpriteId_Player")
-constant(44, "SpriteId_Level")
-constant(45, "SpriteId_Bonus")
-constant(46, "SpriteId_Time")
-constant(47, "SpriteId_Life")
-constant(48, "SpriteId_BigC")
-constant(49, "SpriteId_BigH")
-constant(50, "SpriteId_BigU")
-constant(51, "SpriteId_BigK")
-constant(52, "SpriteId_BigI")
-constant(53, "SpriteId_BigE")
-constant(54, "SpriteId_BigG")
-
+substitute_constants("jsr plotspriteatcharpos", 'a', sprite_constants)
+substitute_constants("jsr setmapblock", 'a', sprite_constants)
+substitute_constants("jsr getspritedata", 'a', sprite_constants)
+substitute_constants("jsr showbigletter", 'a', sprite_constants)
 
 expr(0x1ab5, "DigitsColour")
 expr(0x1b71, "PlatformColour")
 expr(0x1ba9, "LadderColour")
 expr(0x1bd0, "PlatformColour")
-expr(0x1b91, "SpriteId_Platform")
 expr(0x1bd0, "PlatformColour")
-expr(0x1bd9, "SpriteId_Platform")
+expr(0x1bd9, sprite_constants)
 expr(0x1bdf, "MapId_Ladder")
 expr(0x1c0b, "EggColour")
 expr(0x1c34, "MapId_Egg")
-expr(0x1c3d, "SpriteId_Egg")
 expr(0x1c52, "SeedColour")
 expr(0x1c79, "MapId_Seed")
-expr(0x1c82, "SpriteId_Seed")
 expr(0x1c95, "CageColour")
-expr(0x1ca0, "SpriteId_CageWithHole")
+expr(0x1ca0, sprite_constants)
 expr(0x1cc4, "StatusColour")
-expr(0x1ccf, "SpriteId_Score")
-expr(0x1cea, "SpriteId_HighlightBox")
 expr(0x1d01, "StatusColour")
-expr(0x1dba, "SpriteId_Time")
 label_skip(0x1dca)
 expr(0x1dfd, "StatusColour")
 expr(0x1e30, "LivesColour")
-expr(0x1e4d, "SpriteId_Life")
 expr(0x1ebc, "MapId_Ladder")
 expr(0x1eca, "MapId_Ladder")
 expr(0x1f3c, "MapId_Platform")
@@ -1104,9 +1102,9 @@ expr(0x2058, "MapId_Platform")
 expr(0x211a, "MapId_Platform")
 expr(0x2134, "MapId_Platform")
 label_skip(0x21b0)
-expr(0x21b5, "SpriteId_ManRight1")
-expr(0x21bd, "SpriteId_ManLeft1")
-expr(0x21c7, "SpriteId_ManUpDown1")
+expr(0x21b5, sprite_constants)
+expr(0x21bd, sprite_constants)
+expr(0x21c7, sprite_constants)
 label_skip(0x2200)
 expr(0x2208, "(MapId_Egg OR MapId_Seed)")
 expr(0x220c, "MapId_Seed")
@@ -1118,13 +1116,11 @@ expr(0x2306, "EggColour")
 expr(0x2319, "SeedColour")
 expr(0x2325, "PlayerColour")
 expr(0x2337, "BigBirdColour")
-expr(0x233c, "SpriteId_BigBirdRight1")
+expr(0x233c, sprite_constants)
 expr(0x234c, "BirdColour")
-expr(0x2356, "SpriteId_BirdRight1")
-expr(0x2366, "SpriteId_BirdEatLeft1")
+expr(0x2356, sprite_constants)
+expr(0x2366, sprite_constants)
 expr(0x2383, "LiftColour")
-expr(0x2387, "SpriteId_Lift")
-expr(0x23a4, "SpriteId_Lift")
 expr(0x24ed, "MapId_Platform")
 expr(0x24fc, "MapId_Platform")
 expr(0x250e, "MapId_Ladder")
@@ -1138,32 +1134,16 @@ expr(0x265b, "SpriteId_BirdRight1 - SpriteId_BirdRight1")
 expr(0x2681, "SpriteId_BirdEatRight1 - SpriteId_BirdRight1")
 expr(0x269e, "DigitsColour")
 expr(0x2ce6, "LogoColour")
-expr(0x2cea, "SpriteId_BigC")
-expr(0x2cf3, "SpriteId_BigH")
-expr(0x2cfc, "SpriteId_BigU")
-expr(0x2d05, "SpriteId_BigC")
-expr(0x2d0e, "SpriteId_BigK")
-expr(0x2d17, "SpriteId_BigI")
-expr(0x2d20, "SpriteId_BigE")
-expr(0x2d29, "SpriteId_BigE")
-expr(0x2d32, "SpriteId_BigG")
-expr(0x2d3b, "SpriteId_BigG")
 expr(0x2ead, "LiftColour")
-expr(0x2eb1, "SpriteId_Lift")
-expr(0x2ec0, "SpriteId_Lift")
 expr(0x2f65, "LivesColour")
-expr(0x2f7e, "SpriteId_Life")
 expr(0x2921, "<osword0block")
 expr(0x2923, ">osword0block")
 
 expr(0x091c, "255 - inkey_key_h")
 expr(0x1ab6, "DigitsColour")
-expr(0x1b08, "SpriteId_Digit0")
+expr(0x1b08, sprite_constants)
 expr(0x1bdb, "LadderColour")
-expr(0x1be8, "SpriteId_Ladder")
 expr(0x1ef4, "MapId_Platform")
-expr(0x230c, "SpriteId_Egg")
-expr(0x231f, "SpriteId_Seed")
 
 expr(0x19e6, "<spritetable")
 expr(0x19ec, ">spritetable")
