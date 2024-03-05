@@ -69,8 +69,8 @@ def get_label(addr):
 def ldxy(addr):
     test_addr = memory[addr+1] + 256 * memory[addr+3]
     lab = get_label(test_addr)
-    expr(addr + 1, "<" + lab)
-    expr(addr + 3, ">" + lab)
+    expr(addr + 1, make_lo(lab))
+    expr(addr + 3, make_hi(lab))
 
 def label_skip(addr):
     global global_skip
@@ -1062,7 +1062,7 @@ sprite_constants = {
     54: "SpriteId_BigG",
 }
 
-substitute_constants("jsr plotspriteatcharpos", 'a', sprite_constants)
+substitute_constants("jsr plotspriteatcharpos", 'a', sprite_constants, True)
 substitute_constants("jsr setmapblock", 'a', sprite_constants)
 substitute_constants("jsr getspritedata", 'a', sprite_constants)
 substitute_constants("jsr showbigletter", 'a', sprite_constants)
@@ -1106,7 +1106,7 @@ expr(0x21b5, sprite_constants)
 expr(0x21bd, sprite_constants)
 expr(0x21c7, sprite_constants)
 label_skip(0x2200)
-expr(0x2208, "(MapId_Egg OR MapId_Seed)")
+expr(0x2208, make_or("MapId_Egg", "MapId_Seed"))
 expr(0x220c, "MapId_Seed")
 expr(0x22a9, "MapId_Platform")
 expr(0x22b8, "MapId_Platform")
@@ -1136,8 +1136,8 @@ expr(0x269e, "DigitsColour")
 expr(0x2ce6, "LogoColour")
 expr(0x2ead, "LiftColour")
 expr(0x2f65, "LivesColour")
-expr(0x2921, "<osword0block")
-expr(0x2923, ">osword0block")
+expr(0x2921, make_lo("osword0block"))
+expr(0x2923, make_hi("osword0block"))
 
 expr(0x091c, "255 - inkey_key_h")
 expr(0x1ab6, "DigitsColour")
@@ -1145,10 +1145,10 @@ expr(0x1b08, sprite_constants)
 expr(0x1bdb, "LadderColour")
 expr(0x1ef4, "MapId_Platform")
 
-expr(0x19e6, "<spritetable")
-expr(0x19ec, ">spritetable")
-expr(0x278c, "<hiscoretab")
-expr(0x2792, ">hiscoretab")
+expr(0x19e6, make_lo("spritetable"))
+expr(0x19ec, make_hi("spritetable"))
+expr(0x278c, make_lo("hiscoretab"))
+expr(0x2792, make_hi("hiscoretab"))
 expr(0x299D, "hiscorenamebuffer")
 expr(0x299F, "hiscorenamebuffer_end - hiscorenamebuffer - 1")
 

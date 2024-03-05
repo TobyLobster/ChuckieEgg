@@ -1,4 +1,5 @@
-*.asm
+chuckie_orig_acme_report.txt
+temp.asm
 *.bin
 *.hex
 thoughts.txt
