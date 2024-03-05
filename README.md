@@ -1,4 +1,4 @@
-# Chuckie Egg disassembly
+# Chuckie Egg disassembly (BBC Micro)
 
 This was really done as a test case for the py8dis tool for automatically disassembling 6502, but the result is a complete disassembly of the BBC Micro game Chuckie Egg (1983). The assembly is available in both beebasm and acme formats.
 
